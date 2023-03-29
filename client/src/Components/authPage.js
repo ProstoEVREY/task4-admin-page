@@ -3,12 +3,12 @@ import {observer} from "mobx-react-lite";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {Context} from "../index";
 import {login, registration} from "../http/userApi";
-import {Button, Card, Container, Form, NavLink, Row} from "react-bootstrap";
+import {Button, Card, Container, Form} from "react-bootstrap";
 
 const AuthPage = observer(() => {
     const location = useLocation()
     const {user} = useContext(Context)
-    const isLogin = location.pathname === '/login'
+    const isLogin = location.pathname === '/login' || location.pathname ==='/'
 
     const [email, setEmail] = useState('')
     const [username, setUsername] = useState('')
@@ -29,7 +29,7 @@ const AuthPage = observer(() => {
             navigate('/users')
         }
         catch(e){
-            alert(e.response.data.message)
+            alert("No such user exists. Please sign up or enter correct data")
         }
     }
 

@@ -16,16 +16,16 @@ export const check = async () =>{
     localStorage.setItem('token', data.token)
     return jwtDecode(data.token)
 }
-export const deleteUser = async (email) => {
-    const {data} = await $authHost.delete('users',{params:{email}})
+export const deleteUser = async (id) => {
+    const {data} = await $authHost.delete('users',{params:{id}})
     return data
 }
 export const blockUser = async (id) => {
-    const {data} = await $authHost.put('users',{params:{id}})
+    const {data} = await $authHost.put('users',null,{params:{id}})
+    console.log(data)
     return data
 }
 export const getUsers = async () => {
     const {data} =  await $authHost.get('users')
-    console.log(data)
     return data.users
 }

@@ -1,16 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {Button, InputGroup, Nav, Table, Form, ButtonGroup, FormGroup, Container} from "react-bootstrap";
+import {Button, Nav, Table, Form, ButtonGroup, Container} from "react-bootstrap";
 import {blockUser, deleteUser, getUsers} from '../http/userApi'
 import {BsFillTrash3Fill} from 'react-icons/bs'
 import {FiLogOut} from 'react-icons/fi'
 import {useNavigate} from "react-router-dom";
 import dateFormat from 'dateformat'
+import jwtDecode from "jwt-decode";
 
 const UserPage = () => {
     const [users,setUsers] = useState([])
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [isCheck, setIsCheck] = useState([]);
     const navigate = useNavigate()
+    const decoded =  jwtDecode(localStorage.getItem('token'))
+
     const fetch = async () => {
         return await getUsers();
         }
@@ -20,43 +23,77 @@ const UserPage = () => {
             }).catch(e => {
                 console.log(e)
             })
-    },[])
-    const handleSelectAll = () => {
+    },[isCheck])
+    const handleSelectAll = e => {
         setIsCheckAll(!isCheckAll);
-        setIsCheck(users.map(li => li.id));
+        setIsCheck(users.map(li => li.id.toString()));
         if (isCheckAll) {
             setIsCheck([]);
         }
     };
 
-    const handleSelect = user => {
-        return function(){
-            if(isCheck.includes(user.id)){
-                isCheck.filter(item => item !== user.id)
-            }
-            else{
-                setIsCheck([...isCheck, user.id]);
-            }
+    const handleSelect = e => {
+        const {id,checked} = e.target
+        setIsCheck([...isCheck, id]);
+        if (!checked) {
+            setIsCheck(isCheck.filter(item => item !== id));
         }
     };
     const blockFn = async () => {
         if(!isCheck.length){
             alert("No user selected")
         }
-        isCheck.forEach(user => {
-            blockUser(user.id)
-        })
+        for(let id of isCheck){
+            await blockUser(id).catch(e => console.log(e))
+        }
+        let toNavigate = false
+        if(isCheck.includes(decoded.id)){
+            toNavigate = true
+        }
+        alert("Operation complete")
+        setIsCheck([])
+        if(toNavigate){
+            navigate('/')
+        }
     }
     const deleteFn = async() => {
         if(!isCheck.length){
             alert("No user selected")
         }
-        isCheck.forEach(user => {
-            deleteUser(user.email)
+        for(let id of isCheck){
+            await deleteUser(id).catch(e => console.log(e))
+        }
+        let toNavigate = false
+        if(isCheck.includes(decoded.id)){
+            toNavigate = true
+        }
+        alert("Operation complete")
+        setIsCheck([])
+        if(toNavigate){
+            navigate('/')
+        }
+    }
+    const allPresent = () => {
+        let ids = []
+        users.forEach(user => {
+            ids.push(user.id.toString())
         })
+        return JSON.stringify(isCheck.sort()) === JSON.stringify(ids.sort())
     }
     const logOut = () => {
         navigate('/')
+    }
+
+    if(decoded.status === "BLOCKED"){
+        return (
+            <div>
+                <h2>FORBIDDEN</h2>
+                <Button onClick={() => {
+                    navigate('/')
+                }
+                }>Back to login screen</Button>
+            </div>
+        )
     }
 
     return (
@@ -67,7 +104,11 @@ const UserPage = () => {
             <Nav>
                 <div className="p-3">
                     <Form style={{width:100}}>
-                        <Form.Check type="checkbox" onChange={handleSelectAll} label={"Select All"}/>
+                        <Form.Check type="checkbox"
+                                    onChange={handleSelectAll}
+                                    checked={isCheckAll || allPresent()}
+                                    id={"Select All"}
+                                    label={"Select All"}/>
                     </Form>
                 </div>
                 <div className="justify-content-end">
@@ -107,11 +148,12 @@ const UserPage = () => {
                         <th>
                             {<Form className="mb-3 justify-content-center">
                             <Form.Check
+                                id={user.id}
                                 type="checkbox"
-                                onChange={() => {
-                                    handleSelect(user)}
+                                checked={isCheck.includes(user.id.toString())}
+                                onChange={(e) => {
+                                    handleSelect(e)}
                                 }
-                                defaultChecked={isCheck.includes(user.id)}
                             />
                         </Form>}
                         </th>

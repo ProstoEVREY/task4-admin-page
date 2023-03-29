@@ -1,7 +1,7 @@
 import React, {createContext} from 'react';
 import UserStore from './store/userStore.js'
 import App from './App';
-import {createRoot} from "react-dom";
+import {createRoot} from "react-dom/client";
 
 
 export const Context = createContext(null)

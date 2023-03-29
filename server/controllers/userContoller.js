@@ -53,7 +53,6 @@ class UserController {
                 return res.status(500).json("Not found")
             }
             let active = candidate.status !== "ACTIVE" ? "ACTIVE" : "BLOCKED";
-            console.log(active)
             const user = await User.update({status:active},{where:{id}})
             return res.status(200).json(user)
         }
@@ -63,8 +62,8 @@ class UserController {
     }
     async deleteUser(req,res){
         try{
-            const {email} = req.query
-            const user = await User.destroy({where:{email}})
+            const {id} = req.query
+            const user = await User.destroy({where:{id}})
             return res.status(200).json(user)
         }
         catch(e){
