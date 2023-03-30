@@ -11,6 +11,7 @@ const UserPage = () => {
     const [users,setUsers] = useState([])
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [isCheck, setIsCheck] = useState([]);
+    const [toNavigate,setToNavigate] = useState(false)
     const navigate = useNavigate()
     const decoded =  jwtDecode(localStorage.getItem('token'))
 
@@ -20,10 +21,14 @@ const UserPage = () => {
     useEffect( ()=> {
             fetch().then(response => {
                 setUsers(response)
+                // setUsers(users.sort((a, b) => (a.id > b.id) ? 1 : -1))
             }).catch(e => {
                 console.log(e)
             })
-    },[isCheck])
+            if(toNavigate){
+            navigate('/')
+            }
+    },[isCheck,toNavigate])
     const handleSelectAll = e => {
         setIsCheckAll(!isCheckAll);
         setIsCheck(users.map(li => li.id.toString()));
@@ -46,15 +51,11 @@ const UserPage = () => {
         for(let id of isCheck){
             await blockUser(id).catch(e => console.log(e))
         }
-        let toNavigate = false
-        if(isCheck.includes(decoded.id)){
-            toNavigate = true
-        }
         alert("Operation complete")
-        setIsCheck([])
-        if(toNavigate){
-            navigate('/')
+        if(isCheck.includes(decoded.id.toString())){
+            setToNavigate(true)
         }
+        setIsCheck([])
     }
     const deleteFn = async() => {
         if(!isCheck.length){
@@ -63,15 +64,11 @@ const UserPage = () => {
         for(let id of isCheck){
             await deleteUser(id).catch(e => console.log(e))
         }
-        let toNavigate = false
-        if(isCheck.includes(decoded.id)){
-            toNavigate = true
-        }
         alert("Operation complete")
-        setIsCheck([])
-        if(toNavigate){
-            navigate('/')
+        if(isCheck.includes(decoded.id.toString())){
+            setToNavigate(true)
         }
+        setIsCheck([])
     }
     const allPresent = () => {
         let ids = []

@@ -22,7 +22,6 @@ export const deleteUser = async (id) => {
 }
 export const blockUser = async (id) => {
     const {data} = await $authHost.put('users',null,{params:{id}})
-    console.log(data)
     return data
 }
 export const getUsers = async () => {
