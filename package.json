@@ -1,0 +1,16 @@
+{
+  "name": "task4transition",
+  "version": "1.0.0",
+  "description": "<h1>Web-Site with jwt-token authorization</h1> <b>Made with React + React Bootstrap + Express + MySql </b>",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && npm run start",
+    "client": "cd client && npm start",
+    "start": "concurrently --kill-others \"npm run server\" \"npm run client\""
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
