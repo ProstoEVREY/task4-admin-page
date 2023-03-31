@@ -4,9 +4,8 @@
   "description": "<h1>Web-Site with jwt-token authorization</h1> <b>Made with React + React Bootstrap + Express + MySql </b>",
   "main": "index.js",
   "scripts": {
-    "server": "cd server && npm run start",
-    "client": "cd client && npm start",
-    "start": "concurrently --kill-others \"npm run server\" \"npm run client\""
+    "start": "cd server && npm install && node index.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
